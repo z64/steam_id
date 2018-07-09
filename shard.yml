@@ -1,0 +1,9 @@
+name: steam_id
+version: 0.1.0
+
+authors:
+  - Zac Nowicki <zachnowicki@gmail.com>
+
+crystal: 0.25.1
+
+license: MIT
