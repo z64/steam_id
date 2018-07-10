@@ -1,6 +1,9 @@
 struct Steam::ID
   VERSION = "0.1.0"
 
+  class Error < Exception
+  end
+
   # Universe identities a Steam ID can belong to
   enum Universe
     Individual = 0
@@ -70,21 +73,22 @@ struct Steam::ID
   end
 
   # :nodoc:
-  struct Formatter
-    AccountTypeLetter = {
-      'I', # Invalid
-      'U', # Individual
-      'M', # Multiseat
-      'G', # GameServer
-      'A', # AnonGameServer
-      'P', # Pending
-      'C', # ContentServer
-      'g', # Clan
-      'T', # Chat
-      nil, # P2PSuperSeeder
-      'a', # AnonUser
-    }
+  AccountTypeLetter = {
+    'I', # Invalid
+    'U', # Individual
+    'M', # Multiseat
+    'G', # GameServer
+    'A', # AnonGameServer
+    'P', # Pending
+    'C', # ContentServer
+    'g', # Clan
+    'T', # Chat
+    nil, # P2PSuperSeeder
+    'a', # AnonUser
+  }
 
+  # :nodoc:
+  struct Formatter
     def initialize(@id : ID, @io : IO)
     end
 
@@ -131,8 +135,122 @@ struct Steam::ID
     end
   end
 
+  # :nodoc:
+  struct Parser
+    class Error < Exception
+    end
+
+    def initialize(string)
+      @reader = Char::Reader.new(string)
+    end
+
+    def self.parse(string)
+      with new(string) yield
+    end
+
+    delegate current_char, next_char, has_next?, to: @reader
+
+    def expect(string : String)
+      parsed = String.build do |str|
+        string.size.times do
+          str << current_char
+          next_char if has_next?
+        end
+      end
+      string == parsed || raise Error.new("Expected #{string.inspect}, got: #{parsed.inspect}")
+    end
+
+    def expect(char : Char)
+      char == current_char || raise Error.new("Expected #{char}, got: #{char}")
+      next_char
+      true
+    end
+
+    def consume_int
+      value = String.build do |str|
+        loop do
+          char = current_char
+          break unless char.number? && has_next?
+          str << char
+          next_char
+        end
+      end
+      value.to_u64? || raise Error.new("Invalid UInt64")
+    end
+
+    def steam
+      expect("STEAM_")
+    end
+
+    def seperator
+      expect(':')
+    end
+
+    def bracket
+      expect('[')
+      yield
+      expect(']')
+    end
+
+    def one
+      expect('1')
+    end
+
+    def account_type
+      char = current_char
+      next_char
+      index = AccountTypeLetter.index(char) || raise Error.new("Unknown account type identifier: #{char}")
+      AccountType.new(index)
+    end
+
+    def universe
+      value = consume_int
+      Universe.new(value)
+    end
+  end
+
   # Create a Steam ID from a 64 bit value
   def initialize(@value : UInt64)
+  end
+
+  # Attempts to parse the given string as an ID of any of `Format`. Raises
+  # `Error` if no format prases well.
+  def self.new(string : String)
+    Format.each do |format|
+      begin
+        return new(string, format)
+      rescue Parser::Error
+        # Try next format
+      end
+    end
+    raise Error.new("Unknown Steam ID format: #{string}")
+  end
+
+  # Parses a string as the given `Format`. Raises `Error` if parsing fails.
+  def self.new(string : String, format : Format)
+    value = 0_u64
+    Parser.parse(string) do
+      case format
+      when Format::Default
+        steam
+        value = (universe.value.to_u64 << Mask::Universe.offset) | value
+        seperator
+        value = (consume_int << Mask::LowestBit.offset) | value
+        seperator
+        value = (consume_int << Mask::AccountID.offset) | value
+      when Format::Community32
+        bracket do
+          value = (account_type.value.to_u64 << Mask::AccountType.offset) | value
+          seperator
+          one
+          seperator
+          value = consume_int | value
+        end
+      when Format::Community64
+        value = consume_int
+      end
+    end
+    new(value)
   end
 
   # Serializes this `ID` as the given `Format`
@@ -193,6 +311,6 @@ struct Steam::ID
   end
 
   def universe
-    Universe.new(Mask::AccountType.extract_from(@value))
+    Universe.new(Mask::Universe.extract_from(@value))
   end
 end

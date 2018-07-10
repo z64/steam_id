@@ -43,6 +43,71 @@ describe Steam::ID::Mask do
     is: 0b1111111100000000000000000000000000000000000000000000000000000000_u64)
 end
 
+describe Steam::ID::Parser do
+  it "expects a string or char" do
+    Steam::ID::Parser.parse("foobarZbaz") do
+      expect("foo").should be_true
+      expect("bar").should be_true
+      expect('Z').should be_true
+      expect_raises(Steam::ID::Parser::Error, %(Expected "foo", got: "baz")) do
+        expect("foo")
+      end
+    end
+  end
+
+  it "expects a bracketed string" do
+    Steam::ID::Parser.parse("[foo]") do
+      bracket do
+        expect("foo")
+      end
+    end
+  end
+
+  it "consumes an integer" do
+    Steam::ID::Parser.parse("foo123barbaz") do
+      expect("foo")
+      consume_int.should eq 123
+      expect("bar")
+
+      expect_raises(Steam::ID::Parser::Error, "Invalid UInt64") do
+        consume_int
+      end
+    end
+  end
+
+  it "parses account type" do
+    Steam::ID::Parser.parse("Uz") do
+      account_type.should eq Steam::ID::AccountType::Individual
+      expect_raises(Steam::ID::Parser::Error, "Unknown account type identifier: z") do
+        account_type
+      end
+    end
+  end
+
+  it "parses steam ID" do
+    Steam::ID::Parser.parse("STEAM_1:0:11101") do
+      steam
+      consume_int.should eq 1
+      seperator
+      consume_int.should eq 0
+      seperator
+      consume_int.should eq 11101
+    end
+  end
+
+  it "parses community 32 ID" do
+    Steam::ID::Parser.parse("[U:1:22202]") do
+      bracket do
+        account_type.should eq Steam::ID::AccountType::Individual
+        seperator
+        consume_int.should eq 1
+        seperator
+        consume_int.should eq 22202
+      end
+    end
+  end
+end
+
 def it_formats(id, into string, with format)
   it "formats #{id} into #{string} with #{format}" do
     id.to_s(format).should eq string
@@ -83,5 +148,34 @@ describe Steam::ID do
       id,
       into: "[U:1:22202]",
       with: Steam::ID::Format::Community32)
+  end
+
+  it "parses STEAM_1:0:11101" do
+    id = Steam::ID.new("STEAM_1:0:11101", Steam::ID::Format::Default)
+    id.universe.should eq Steam::ID::Universe::Public
+    id.lowest_bit.should eq 0
+    id.account_id.should eq 11101
+  end
+
+  it "parses 76561197960287930" do
+    id = Steam::ID.new("76561197960287930", Steam::ID::Format::Community64)
+    id.should eq Steam::ID.new(76561197960287930)
+  end
+
+  it "parses [U:1:22202]" do
+    id = Steam::ID.new("[U:1:22202]", Steam::ID::Format::Community32)
+    id.account_type.should eq Steam::ID::AccountType::Individual
+    id.lowest_bit.should eq 0
+    id.account_id.should eq 11101
+  end
+
+  it "parses any format" do
+    {"STEAM_1:0:11101", "76561197960287930", "[U:1:22202]"}.each do |input|
+      Steam::ID.new(input)
+    end
+
+    expect_raises(Steam::ID::Error, "Unknown Steam ID format: foo") do
+      Steam::ID.new("foo")
+    end
   end
 end
