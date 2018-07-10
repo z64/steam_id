@@ -45,7 +45,7 @@ struct Steam::ID
     getter mask : UInt64
 
     def initialize(@size : UInt64, @offset : UInt64 = 0)
-      @mask = ((2_u64 ** size).to_u64 - 1) << offset
+      @mask = ((1_u64 << size).to_u64 - 1) << offset
     end
 
     def self.new(size : UInt64, after : Mask)
