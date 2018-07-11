@@ -2,7 +2,8 @@
 
 A library for parsing and serializing Steam IDs.
 
-- [Official Documentation](https://developer.valvesoftware.com/wiki/SteamID)
+- [Library docs](https://z64.github.io/steam_id/)
+- [SteamID official documentation](https://developer.valvesoftware.com/wiki/SteamID)
 
 ## Background
 
