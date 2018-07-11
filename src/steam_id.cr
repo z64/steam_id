@@ -256,12 +256,12 @@ struct Steam::ID
   # Serializes this `ID` as the given `Format`
   def to_s(format : Format = Format::Community64)
     String.build do |io|
-      to_s(format, io)
+      to_s(io, format)
     end
   end
 
   # Serializes this `ID` as the given `Format`, writing to the given IO
-  def to_s(format : Format, io : IO)
+  def to_s(io : IO, format : Format = Format::Community64)
     Formatter.format(self, io) do
       case format
       when Format::Default
