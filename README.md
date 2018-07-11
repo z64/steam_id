@@ -35,7 +35,7 @@ An ID can be represented in three main ways.
 
   This is the standard "textual" format as described by the SteamID docs.
 
-  This is a *lossy* format this is missing account type and account instance.
+  This is a *lossy* format that is missing account type and account instance.
 
 3. As a string (`Steam::ID::Format::Community32`). ex: `[U:1:22202]`
 
@@ -94,7 +94,7 @@ id = Steam::ID.new(76561193739638996)
 id.instance # => 0
 correct_instance = (1_u64 << Steam::ID::Mask::Instance.offset) | id.to_u64
 
-corrected = Steam::ID.new(correct_instance | id.to_u64)
+corrected = Steam::ID.new(correct_instance)
 corrected.instance # => 1
 corrected.to_u64 # => 76561198034606292_u64
 ```
