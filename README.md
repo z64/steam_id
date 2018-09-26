@@ -85,7 +85,7 @@ corrected.to_s(Steam::ID::Format::Default) # => STEAM_1:0:37170282
 
 Discord's OAuth2 API may return a Steam ID with the instance bit as `0`.
 While this is still a valid ID that will work in Steam's HTTP API, it will
-not match Steam IDs you may have received from other srouces.
+not match Steam IDs you may have received from other sources.
 
 Similarly, we can build a corrected ID:
 
