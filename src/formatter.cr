@@ -1,5 +1,5 @@
-# :nodoc:
 struct Steam::ID
+  # :nodoc:
   struct Formatter
     def initialize(@id : ID, @io : IO)
     end
