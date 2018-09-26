@@ -52,28 +52,30 @@
 # # E: LowestBit
 # Steam::ID::Mask::LowestBit.extract_from(binary) # => 1
 # ```
-struct Steam::ID::Mask
-  getter size : UInt64
+struct Steam::ID
+  struct Mask
+    getter size : UInt64
 
-  getter offset : UInt64
+    getter offset : UInt64
 
-  getter mask : UInt64
+    getter mask : UInt64
 
-  def initialize(@size : UInt64, @offset : UInt64 = 0)
-    @mask = ((1_u64 << size).to_u64 - 1) << offset
+    def initialize(@size : UInt64, @offset : UInt64 = 0)
+      @mask = ((1_u64 << size).to_u64 - 1) << offset
+    end
+
+    def self.new(size : UInt64, after : Mask)
+      new(size, after.size + after.offset)
+    end
+
+    def extract_from(value : UInt64)
+      (value & @mask) >> offset
+    end
+
+    LowestBit   = Mask.new(1, 0)
+    AccountID   = Mask.new(31, LowestBit)
+    Instance    = Mask.new(20, AccountID)
+    AccountType = Mask.new(4, Instance)
+    Universe    = Mask.new(8, AccountType)
   end
-
-  def self.new(size : UInt64, after : Mask)
-    new(size, after.size + after.offset)
-  end
-
-  def extract_from(value : UInt64)
-    (value & @mask) >> offset
-  end
-
-  LowestBit   = Mask.new(1, 0)
-  AccountID   = Mask.new(31, LowestBit)
-  Instance    = Mask.new(20, AccountID)
-  AccountType = Mask.new(4, Instance)
-  Universe    = Mask.new(8, AccountType)
 end
