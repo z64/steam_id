@@ -5,7 +5,7 @@
 # as encoded IDs may be missing certain pieces of metadata if it was decoded
 # from certain formats (see `Steam::ID::Format` for more info).
 struct Steam::ID
-  VERSION = "0.1.0"
+  VERSION = "0.2.0"
 
   # Exception that is raised when parsing an `ID` fails
   class Error < Exception
