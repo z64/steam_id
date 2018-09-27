@@ -66,19 +66,15 @@ Games such as Garry's mod (and other GoldSrc, Orange Box games)  may always enco
  with the resulting 64 bit ID, will usually result in an error. You can see why
 in the example below.
 
-You can use `Steam::ID::Mask` against the parsed value to programatically construct
-a new ID with the correct universe value:
+You can use `Steam::ID#universe=` to re-encode the ID with the updated metadata:
 
 ```crystal
 id = Steam::ID.new("STEAM_0:0:37170282")
 id.universe # => Individual
 id.to_u64   # => 74340564_u64 (Can't be sent to the API..)
-corrected_id = (1_u64 << Steam::ID::Mask::Universe.offset) | id.to_u64
-
-corrected = Steam::ID.new(corrected_id)
-corrected.universe # => Public
-corrected.to_u64   # => 72057594112268500_u64 (OK!)
-corrected.to_s(Steam::ID::Format::Default) # => STEAM_1:0:37170282
+id.universe = :public
+id.to_u64   # => 72057594112268500_u64 (OK!)
+id.to_s(Steam::ID::Format::Default) # => STEAM_1:0:37170282
 ```
 
 ### Discord API
@@ -87,16 +83,14 @@ Discord's OAuth2 API may return a Steam ID with the instance bit as `0`.
 While this is still a valid ID that will work in Steam's HTTP API, it will
 not match Steam IDs you may have received from other sources.
 
-Similarly, we can build a corrected ID:
+Similarly, we can re-encode a corrected ID:
 
 ```crystal
 id = Steam::ID.new(76561193739638996)
 id.instance # => 0
-correct_instance = (1_u64 << Steam::ID::Mask::Instance.offset) | id.to_u64
-
-corrected = Steam::ID.new(correct_instance)
-corrected.instance # => 1
-corrected.to_u64 # => 76561198034606292_u64
+id.instance = 1
+id.instace  #=> 1
+id.to_u64   # => 76561198034606292_u64
 ```
 
 ## Installation

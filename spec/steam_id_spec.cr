@@ -70,4 +70,25 @@ describe Steam::ID do
       Steam::ID.new("foo")
     end
   end
+
+  it "instance=" do
+    id = Steam::ID.new(76561193739638996)
+    id.instance.should eq 0
+    id.instance = 1
+    id.instance.should eq 1
+  end
+
+  it "account_type=" do
+    id = Steam::ID.new(76561193739638996)
+    id.account_type.should eq Steam::ID::AccountType::Individual
+    id.account_type = :anon_user
+    id.account_type.should eq Steam::ID::AccountType::AnonUser
+  end
+
+  it "sets universe" do
+    id = Steam::ID.new(76561193739638996)
+    id.universe.should eq Steam::ID::Universe::Public
+    id.universe = :beta
+    id.universe.should eq Steam::ID::Universe::Beta
+  end
 end

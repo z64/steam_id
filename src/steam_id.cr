@@ -183,14 +183,39 @@ struct Steam::ID
     Mask::Instance.extract_from(@value)
   end
 
+  # Re-encodes this ID with an updated instance value
+  def instance=(new_value : UInt64)
+    @value = calculate_id(account_id(true), new_value, account_type, universe)
+  end
+
   # The `AccountType` this `ID` represents
   def account_type
     AccountType.new(Mask::AccountType.extract_from(@value))
   end
 
+  # Re-encodes this ID with an updated `AccountType`
+  def account_type=(new_value : AccountType)
+    @value = calculate_id(account_id(true), instance, new_value, universe)
+  end
+
   # The `Universe` this `ID` belongs to
   def universe
     Universe.new(Mask::Universe.extract_from(@value))
+  end
+
+  # Re-encodes this ID with an updated `Universe`
+  def universe=(new_value : Universe)
+    @value = calculate_id(account_id(true), instance, account_type, new_value)
+  end
+
+  # Encodes a UInt64 with the provided data
+  private def calculate_id(account_id : UInt64, instance : UInt64,
+                           account_type : AccountType, universe : Universe)
+    value = account_id
+    value = Mask::Instance.offset(instance.to_u64) | value
+    value = Mask::AccountType.offset(account_type.to_u64) | value
+    value = Mask::Universe.offset(universe.to_u64) | value
+    value
   end
 end
 
