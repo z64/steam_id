@@ -106,14 +106,14 @@ struct Steam::ID
       case format
       when Format::Default
         steam
-        value = (universe.value.to_u64 << Mask::Universe.offset) | value
+        value = Mask::Universe.offset(consume_int) | value
         seperator
-        value = (consume_int << Mask::LowestBit.offset) | value
+        value = Mask::LowestBit.offset(consume_int) | value
         seperator
-        value = (consume_int << Mask::AccountID.offset) | value
+        value = Mask::AccountID.offset(consume_int) | value
       when Format::Community32
         bracket do
-          value = (account_type.value.to_u64 << Mask::AccountType.offset) | value
+          value = Mask::AccountType.offset(account_type.value.to_u64)
           seperator
           one
           seperator

@@ -22,6 +22,11 @@ describe Steam::ID::Mask do
     mask.extract_from(masked).should eq 0b1010
   end
 
+  it "offsets values" do
+    mask = Steam::ID::Mask.new(4, 4)
+    mask.offset(1).should eq 0b10000
+  end
+
   check_mask(
     Steam::ID::Mask::LowestBit,
     is: 0b0000000000000000000000000000000000000000000000000000000000000001_u64)

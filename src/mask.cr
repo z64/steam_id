@@ -72,6 +72,10 @@ struct Steam::ID
       (value & @mask) >> offset
     end
 
+    def offset(value : UInt64)
+      value << @offset
+    end
+
     LowestBit   = Mask.new(1, 0)
     AccountID   = Mask.new(31, LowestBit)
     Instance    = Mask.new(20, AccountID)
