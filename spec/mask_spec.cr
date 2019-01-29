@@ -10,20 +10,20 @@ end
 
 describe Steam::ID::Mask do
   it "initializes" do
-    mask = Steam::ID::Mask.new(4, 4)
+    mask = Steam::ID::Mask.new(4_u64, 4)
     mask.mask.should eq 0b11110000_u64
     mask.size.should eq 4
     mask.offset.should eq 4
   end
 
   it "extracts values" do
-    mask = Steam::ID::Mask.new(4, 4)
+    mask = Steam::ID::Mask.new(4_u64, 4)
     masked = 0b1010_1111_u64
     mask.extract_from(masked).should eq 0b1010
   end
 
   it "offsets values" do
-    mask = Steam::ID::Mask.new(4, 4)
+    mask = Steam::ID::Mask.new(4_u64, 4)
     mask.offset(1).should eq 0b10000
   end
 

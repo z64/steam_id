@@ -76,10 +76,10 @@ struct Steam::ID
       value << @offset
     end
 
-    LowestBit   = Mask.new(1, 0)
-    AccountID   = Mask.new(31, LowestBit)
-    Instance    = Mask.new(20, AccountID)
-    AccountType = Mask.new(4, Instance)
-    Universe    = Mask.new(8, AccountType)
+    LowestBit   = Mask.new(1_u64, 0)
+    AccountID   = Mask.new(31_u64, LowestBit)
+    Instance    = Mask.new(20_u64, AccountID)
+    AccountType = Mask.new(4_u64, Instance)
+    Universe    = Mask.new(8_u64, AccountType)
   end
 end
