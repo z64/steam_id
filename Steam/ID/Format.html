@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Crystal Docs 0.27.0">
+
+
+<link href="../../css/style.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="../../js/doc.js"></script>
+<script type="text/javascript">
+  CrystalDoc.base_path = "../../";
+</script>
+
+  <meta id="repository-name" content="github.com/z64/steam_id">
+  <title>Steam::ID::Format - github.com/z64/steam_id</title>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="repository-links">
+      <a href="../../index.html">README</a>
+    </div>
+  </div>
+
+  <div class="search-results" class="hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class="parent open current" data-id="github.com/z64/steam_id/Steam" data-name="steam">
+      <a href="../../Steam.html">Steam</a>
+      
+        <ul>
+  
+  <li class="parent open current" data-id="github.com/z64/steam_id/Steam/ID" data-name="steam::id">
+      <a href="../../Steam/ID.html">ID</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/z64/steam_id/Steam/ID/AccountType" data-name="steam::id::accounttype">
+      <a href="../../Steam/ID/AccountType.html">AccountType</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/z64/steam_id/Steam/ID/Error" data-name="steam::id::error">
+      <a href="../../Steam/ID/Error.html">Error</a>
+      
+    </li>
+  
+  <li class=" current" data-id="github.com/z64/steam_id/Steam/ID/Format" data-name="steam::id::format">
+      <a href="../../Steam/ID/Format.html">Format</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/z64/steam_id/Steam/ID/Mask" data-name="steam::id::mask">
+      <a href="../../Steam/ID/Mask.html">Mask</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/z64/steam_id/Steam/ID/Universe" data-name="steam::id::universe">
+      <a href="../../Steam/ID/Universe.html">Universe</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<h1 class="type-name">
+
+  <span class="kind">enum</span> Steam::ID::Format
+
+</h1>
+
+
+
+
+
+  <h2>Overview</h2>
+
+  <p>An enum for selecting the various formats a Steam ID can be parsed or
+serialized from.</p>
+
+<p><span class="flag purple">NOTE</span>  Every format except for <code><a href="../../Steam/ID/Format.html#Community64">Community64</a></code> are "lossy" formats and
+does not encode all possible information that can be stored in a Steam ID.</p>
+
+<p><strong>IDs that are parsed or serialized with these formats are missing the
+following information:</strong></p>
+
+<ul><li><code><a href="../../Steam/ID/Format.html#Default">Default</a></code> does not encode <code><a href="../../Steam/ID/AccountType.html">AccountType</a></code> or instance</li><li><code><a href="../../Steam/ID/Format.html#Community32">Community32</a></code> does not encode <code><a href="../../Steam/ID/Universe.html">Universe</a></code> or instance</li></ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2>Defined in:</h2>
+  
+    
+      <a href="https://github.com/z64/steam_id/blob/cad3ca0bd5cff3e46806d088007c661e75c17dea/src/steam_id.cr#L59" target="_blank">
+        steam_id.cr
+      </a>
+    
+    <br/>
+  
+
+
+
+  
+    <h2>Enum Members</h2>
+  
+  <dl>
+    
+      <dt class="entry-const" id="Default">
+        <strong>Default</strong> = <code><span class="n">0</span></code>
+      </dt>
+      
+      <dd class="entry-const-doc">
+        <p>The standard textual representation of a Steam ID. ex: <code>"STEAM_1:0:11101"</code></p>
+      </dd>
+      
+    
+      <dt class="entry-const" id="Community32">
+        <strong>Community32</strong> = <code><span class="n">1</span></code>
+      </dt>
+      
+      <dd class="entry-const-doc">
+        <p>A string format for short "community" URLs. ex: <code>"[U:1:22202]"</code></p>
+      </dd>
+      
+    
+      <dt class="entry-const" id="Community64">
+        <strong>Community64</strong> = <code><span class="n">2</span></code>
+      </dt>
+      
+      <dd class="entry-const-doc">
+        <p>A 64 bit integer, represented as a string. ex: <code>"76561197960287930"</code></p>
+      </dd>
+      
+    
+  </dl>
+
+
+
+
+
+
+
+  <h2>Instance Method Summary</h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#community32%3F-instance-method" class="signature"><strong>#community32?</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#community64%3F-instance-method" class="signature"><strong>#community64?</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#default%3F-instance-method" class="signature"><strong>#default?</strong></a>
+        
+      </li>
+    
+  </ul>
+
+
+
+
+
+<div class="methods-inherited">
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+</div>
+
+
+
+
+
+
+  <h2>Instance Method Detail</h2>
+  
+    <div class="entry-detail" id="community32?-instance-method">
+      <div class="signature">
+        
+        def <strong>community32?</strong>
+
+        <a class="method-permalink" href="#community32%3F-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/z64/steam_id/blob/cad3ca0bd5cff3e46806d088007c661e75c17dea/src/steam_id.cr#L64" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="community64?-instance-method">
+      <div class="signature">
+        
+        def <strong>community64?</strong>
+
+        <a class="method-permalink" href="#community64%3F-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/z64/steam_id/blob/cad3ca0bd5cff3e46806d088007c661e75c17dea/src/steam_id.cr#L67" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="default?-instance-method">
+      <div class="signature">
+        
+        def <strong>default?</strong>
+
+        <a class="method-permalink" href="#default%3F-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/z64/steam_id/blob/cad3ca0bd5cff3e46806d088007c661e75c17dea/src/steam_id.cr#L61" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+
+</div>
+
+</body>
+</html>

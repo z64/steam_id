@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Crystal Docs 0.27.0">
+
+
+<link href="css/style.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript">
+  CrystalDoc.base_path = "";
+</script>
+
+  <meta id="repository-name" content="github.com/z64/steam_id">
+  <title>README - github.com/z64/steam_id</title>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="repository-links">
+      <a href="index.html">README</a>
+    </div>
+  </div>
+
+  <div class="search-results" class="hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class="parent " data-id="github.com/z64/steam_id/Steam" data-name="steam">
+      <a href="Steam.html">Steam</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="github.com/z64/steam_id/Steam/ID" data-name="steam::id">
+      <a href="Steam/ID.html">ID</a>
+      
+        <ul>
+  
+  <li class=" " data-id="github.com/z64/steam_id/Steam/ID/AccountType" data-name="steam::id::accounttype">
+      <a href="Steam/ID/AccountType.html">AccountType</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/z64/steam_id/Steam/ID/Error" data-name="steam::id::error">
+      <a href="Steam/ID/Error.html">Error</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/z64/steam_id/Steam/ID/Format" data-name="steam::id::format">
+      <a href="Steam/ID/Format.html">Format</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/z64/steam_id/Steam/ID/Mask" data-name="steam::id::mask">
+      <a href="Steam/ID/Mask.html">Mask</a>
+      
+    </li>
+  
+  <li class=" " data-id="github.com/z64/steam_id/Steam/ID/Universe" data-name="steam::id::universe">
+      <a href="Steam/ID/Universe.html">Universe</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<h1>steam_id</h1>
+
+<p>A library for parsing and serializing Steam IDs.</p>
+
+<ul><li><a href="https://z64.github.io/steam_id/" target="_blank">Library docs</a></li><li><a href="https://developer.valvesoftware.com/wiki/SteamID" target="_blank">SteamID official documentation</a></li></ul>
+
+<h2>Background</h2>
+
+<p>I wrote this library because:</p>
+
+<ul><li>Understanding Steam IDs can be confusing</li><li>A lot of libraries implement Steam IDs wrong</li><li>IDs encountered "in the wild" may be missing information, or "wrong"</li></ul>
+
+<p>The important detail to understand is that any observed Steam ID is <em>not</em> a
+unique identifier in the traditional sense. For an application that observes
+Steam IDs from <em>multiple</em> sources, it would be unwise to use a Steam ID as a
+primary key, for instance.</p>
+
+<p><strong>A Steam ID is an integer that contains encoded account metadata. Depending
+on how and where you observe a Steam ID, some of this metadata may be
+wrong or missing, but still refer to the same account.</strong></p>
+
+<h2>ID Formats</h2>
+
+<p>An ID can be represented in three main ways.</p>
+
+<ol><li>As a 64 bit integer (<code><a href="Steam/ID/Format.html#Community64">Steam::ID::Format::Community64</a></code>). ex: <code>76561197960287930</code></li></ol>
+
+<p>This is a <em>lossless</em> format that contains <em>all</em> metadata. This is the format of
+  ID that is used when interacting with the Steam API.</p>
+
+<ol><li>As a string (<code><a href="Steam/ID/Format.html#Default">Steam::ID::Format::Default</a></code>). ex: <code>STEAM_1:0:11101</code></li></ol>
+
+<p>This is the standard "textual" format as described by the SteamID docs.</p>
+
+<p>This is a <em>lossy</em> format that is missing account type and account instance.</p>
+
+<ol><li>As a string (<code><a href="Steam/ID/Format.html#Community32">Steam::ID::Format::Community32</a></code>). ex: <code>[U:1:22202]</code></li></ol>
+
+<p>This is a special format for forming "short" URLs to Steam community
+  pages.</p>
+
+<p>This is a <em>lossy</em> format that is missing account universe and account instance.</p>
+
+<p>It's important to consider what your application needs, and whether the format
+you are handling Steam IDs in contains that information. Each format encodes
+and <em>account ID</em> and is most likely what you want to use to uniquely identify
+users, presumably within the same universe.</p>
+
+<p>I've included a fair amount of documentation on <code><a href="Steam/ID/Format.html">Steam::ID::Format</a></code>, as well as
+<code><a href="Steam/ID/Mask.html">Steam::ID::Mask</a></code>, a low level set of structs for decoding/encoding Steam IDs,
+that may help improve your understanding of the format.</p>
+
+<h2>Examples of manipulating IDs</h2>
+
+<p>Sometimes you may encounter "wrongly" encoded IDs that are somehow not encoded
+in a way that can be used with the Steam API. Here are a few "real world" examples of
+manipulating IDs into a usable format.</p>
+
+<h3>Old Source games</h3>
+
+<p>Games such as Garry's mod (and other GoldSrc, Orange Box games)  may always encode
+ a universe of <code>STEAM_0</code>. Attempting to parse this ID, and then to call the API
+ with the resulting 64 bit ID, will usually result in an error. You can see why
+in the example below.</p>
+
+<p>You can use <code>Steam::ID#universe=</code> to re-encode the ID with the updated metadata:</p>
+
+<pre><code class="language-crystal">id <span class="o">=</span> <span class="t">Steam</span><span class="t">::</span><span class="t">ID</span>.<span class="k">new</span>(<span class="s">&quot;STEAM_0:0:37170282&quot;</span>)
+id.universe <span class="c"># =&gt; Individual</span>
+id.to_u64   <span class="c"># =&gt; 74340564_u64 (Can&#39;t be sent to the API..)</span>
+id.universe <span class="o">=</span> <span class="n">:public</span>
+id.to_u64   <span class="c"># =&gt; 72057594112268500_u64 (OK!)</span>
+id.to_s(<span class="t">Steam</span><span class="t">::</span><span class="t">ID</span><span class="t">::</span><span class="t">Format</span><span class="t">::</span><span class="t">Default</span>) <span class="c"># =&gt; STEAM_1:0:37170282</span></code></pre>
+
+<h3>Discord API</h3>
+
+<p>Discord's OAuth2 API may return a Steam ID with the instance bit as <code>0</code>.
+While this is still a valid ID that will work in Steam's HTTP API, it will
+not match Steam IDs you may have received from other sources.</p>
+
+<p>Similarly, we can re-encode a corrected ID:</p>
+
+<pre><code class="language-crystal">id <span class="o">=</span> <span class="t">Steam</span><span class="t">::</span><span class="t">ID</span>.<span class="k">new</span>(<span class="n">76561193739638996</span>)
+id.instance <span class="c"># =&gt; 0</span>
+id.instance <span class="o">=</span> <span class="n">1</span>
+id.instace  <span class="c">#=&gt; 1</span>
+id.to_u64   <span class="c"># =&gt; 76561198034606292_u64</span></code></pre>
+
+<h2>Installation</h2>
+
+<p>Add this to your application's <code>shard.yml</code>:</p>
+
+<pre><code class="language-yaml">dependencies:
+  steam_id:
+    github: z64/steam_id</code></pre>
+
+<h2>Usage</h2>
+
+<pre><code class="language-crystal"><span class="k">require</span> <span class="s">&quot;steam_id&quot;</span>
+
+<span class="c"># Create an ID from a UInt64</span>
+id <span class="o">=</span> <span class="t">Steam</span><span class="t">::</span><span class="t">ID</span>.<span class="k">new</span>(<span class="n">76561198092541763</span>)
+id.account_id   <span class="c"># =&gt; 66138017</span>
+id.account_type <span class="c"># =&gt; Steam::ID::AcountType::Individual</span>
+id.universe     <span class="c"># =&gt; Steam::ID::Universe::Public</span>
+id.to_u64       <span class="c"># =&gt; 76561197960287930</span>
+
+<span class="c"># For enum attributes, you can use interrogation style methods:</span>
+id.universe.public? <span class="c"># =&gt; true</span>
+
+<span class="c"># Parse an ID from an unknown format</span>
+<span class="t">Steam</span><span class="t">::</span><span class="t">ID</span>.<span class="k">new</span>(<span class="s">&quot;STEAM_1:0:11101&quot;</span>) <span class="c"># =&gt; Steam::ID</span>
+<span class="t">Steam</span><span class="t">::</span><span class="t">ID</span>.<span class="k">new</span>(<span class="s">&quot;foo&quot;</span>)             <span class="c"># =&gt; raises Steam::ID::Error</span>
+
+<span class="c"># Parse an ID from a known format (better performance)</span>
+<span class="t">Steam</span><span class="t">::</span><span class="t">ID</span>.<span class="k">new</span>(<span class="s">&quot;STEAM_1:0:11101&quot;</span>, <span class="t">Steam</span><span class="t">::</span><span class="t">ID</span><span class="t">::</span><span class="t">Format</span><span class="t">::</span><span class="t">Default</span>)
+  <span class="c"># =&gt; Steam::ID</span>
+<span class="t">Steam</span><span class="t">::</span><span class="t">ID</span>.<span class="k">new</span>(<span class="s">&quot;76561197960287930&quot;</span>, <span class="t">Steam</span><span class="t">::</span><span class="t">ID</span><span class="t">::</span><span class="t">Format</span><span class="t">::</span><span class="t">Default</span>)
+  <span class="c"># =&gt; raises Steam::ID::Error</span></code></pre>
+
+<h2>Contributors</h2>
+
+<ul><li><a href="https://github.com/z64" target="_blank">Zac Nowicki</a> - creator, maintainer</li></ul>
+</div>
+</body>
+</html>
